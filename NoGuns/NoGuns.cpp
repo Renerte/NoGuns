@@ -8,15 +8,21 @@ BOOL CALLBACK windowProc(_In_ HWND hWnd, _In_ LPARAM lParam) {
 	GetClassName(hWnd, class_buffer, 256);
 
 	if (wcscmp(class_buffer, L"Valve001") == 0) {
-		std::wcout << L"Valve Source game detected!" << std::endl;
+		DWORD pId = 0;
+		GetWindowThreadProcessId(hWnd, &pId);
+		HANDLE processHandle = OpenProcess(PROCESS_TERMINATE, FALSE, pId);
+		std::wcout << L"Valve Source game detected! Termination attempted!" << std::endl;
+		TerminateProcess(processHandle, 0);
+		CloseHandle(processHandle);
 	}
 	delete[] class_buffer;
 	return TRUE;
 }
 
 int main() {
-	while (true) {
-		BOOL works = EnumWindows(*windowProc, NULL);
+	BOOL works = TRUE;
+	while (works == TRUE) {
+		works = EnumWindows(*windowProc, NULL);
 		Sleep(1000);
 	}
 	return 0;
